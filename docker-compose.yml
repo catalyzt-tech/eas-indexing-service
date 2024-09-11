@@ -3,7 +3,6 @@ version: "3.9"
 services:
   eas-postgres:
     image: postgres:latest
-    container_name: eas-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgresPassword
@@ -11,14 +10,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432"
-
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
   eas-indexer:
     build: .
-    container_name: eas_indexer_container
     environment:
-      CHAIN_ID: ${CHAIN_ID}
-      DATABASE_URL: "postgresql://postgres:postgresPassword@eas-postgres:5432/eas-index"
+      CHAIN_ID: ${CHAIN_ID} 
+      DATABASE_URL: "postgresql://postgres:postgresPassword@localhost:5432/eas-index"
     depends_on:
       - eas-postgres
     ports:
