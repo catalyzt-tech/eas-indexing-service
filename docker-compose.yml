@@ -21,9 +21,10 @@ services:
     build: .
     environment:
       CHAIN_ID: ${CHAIN_ID} 
-      DATABASE_URL: "postgresql://postgres:postgresPassword@localhost:5432/eas-index"
+      DATABASE_URL: "postgresql://postgres:postgresPassword@eas-postgres:5432/eas-index"
     depends_on:
-      - eas-postgres
+      eas-postgres:
+        condition: service_healthy
     ports:
       - "4000:4000"
 
